@@ -1,6 +1,7 @@
 pipeline{
 	agent any
 	environment{
+	}
 		
 	stages{
 		stage('git pull'){
@@ -38,3 +39,5 @@ pipeline{
 			final summary
 			}
 			}
+	}
+}
