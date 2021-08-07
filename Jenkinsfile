@@ -75,21 +75,21 @@ pipeline{
 				    if ("${Static_Check}" == 'YES'){
 					println("Successfully ran Static_Check block")
 					} else {
-						println("didn't do the Static Checks"
+						println("didn't do the Static Checks")
 						}
 				
 					if ("${QA}" == 'YES'){
 					println("Successfully RAN the QA checks")
 					} else {
-						println("didn't do the QA checks"
+						println("didn't do the QA checks")
 						}
 						
 					if ("${QA}" == 'YES'){
 					println("Successfully RAN the Unit_Test checks")
 					} else {
-						println("didn't do the QA checks"
+						println("didn't do the QA checks")
 						}
-						
+				}		
 			echo "final summary"
 			}
 		}
