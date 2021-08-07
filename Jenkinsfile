@@ -7,7 +7,7 @@ pipeline{
 		string (name: 'Success_Email', defaultValue: 'success@gmail.com')
 		string (name: 'Failure_Email', defaultValue: 'failure@gmail.com')
 	}
-	environ
+	
 	stages{
 		stage('git pull'){
 			steps{
