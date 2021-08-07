@@ -11,7 +11,7 @@ pipeline{
 	stages{
 		stage('git pull'){
 			steps{
-				// git 'https://github.com/madhureddy143/M-BENZ.git'
+				git 'https://github.com/madhureddy143/M-BENZ.git'
 				echo "pulling from git"
 				}
 				}
