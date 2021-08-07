@@ -11,7 +11,8 @@ pipeline{
 	stages{
 		stage('git pull'){
 			steps{
-				git 'https://github.com/madhureddy143/M-BENZ.git'
+				git branch: 'main',
+				url: 'https://github.com/madhureddy143/M-BENZ.git'
 				echo "pulling from git"
 				}
 				}
@@ -19,14 +20,11 @@ pipeline{
 			steps{
 				script {
                 def now = new Date()
-				def year = now.format("yyyy", TimeZone.getTimeZone('IST'))
+				def year = now.format("yyyy", TimeZone.getTimeZone('IST'))	
 				
-				//def response = httpRequest "https://calendarific.com/api/v2/holidays?&api_key=d20d05ccb411d9ce3b56b654971e17a29b0aa1ed&country=IN&year=${year}"
-				def response = httpRequest contentType: 'APPLICATION_JSON', httpMode: 'GET', url: "https://calendarific.com/api/v2/holidays?&api_key=d20d05ccb411d9ce3b56b654971e17a29b0aa1ed&country=IN&year=${year}"
-	            println('Status: '+response.status)
-                println('Response: '+response.content)
-
-				echo "working on rest url"
+				def response = httpRequest contentType: 'APPLICATION_JSON', httpMode: 'GET', outputFile: 'build.json', url: "https://calendarific.com/api/v2/holidays?&api_key=d20d05ccb411d9ce3b56b654971e17a29b0aa1ed&country=IN&year=${year}"
+				echo "working on rest url and got the report and captured in build.json"
+				
 				}
 				}
 				}
@@ -42,6 +40,7 @@ pipeline{
 						expression { "${params.Unit_Test}" == 'YES'}
 						}
 					steps{
+						fileOperations([folderCreateOperation('Unit Test')])
 						echo "doing unit tests"
 						 }
 				}
@@ -52,6 +51,7 @@ pipeline{
 								expression { "${params.Static_Check}" == 'YES'}
 								}
 							steps{
+								fileOperations([folderCreateOperation('static check')])
 								echo "doing static check"
 						    }
 				        }
@@ -61,6 +61,7 @@ pipeline{
 								expression { "${params.QA}" == 'YES'}
 								}
 							steps{
+								fileOperations([folderCreateOperation('QA')])
 								echo"doing QA check"
 				            }
 				        }
@@ -70,6 +71,25 @@ pipeline{
 	    }
 		stage('summary'){
 			steps{
+				script{
+				    if ("${Static_Check}" == 'YES'){
+					println("Successfully ran Static_Check block")
+					} else {
+						println("didn't do the Static Checks"
+						}
+				
+					if ("${QA}" == 'YES'){
+					println("Successfully RAN the QA checks")
+					} else {
+						println("didn't do the QA checks"
+						}
+						
+					if ("${QA}" == 'YES'){
+					println("Successfully RAN the Unit_Test checks")
+					} else {
+						println("didn't do the QA checks"
+						}
+						
 			echo "final summary"
 			}
 		}
@@ -79,13 +99,13 @@ pipeline{
 			emailext body: '''Dear Team,
 
                         please find below build success mail''', subject: 'build success mail', to: "${params.Success_Email}",
-						from : 'noreply-build@oracle.com'
+						from : 'noreply-build@gmail.com'
 		}
 		failure {
 			emailext body: '''Dear Team,
 
                         please find below build failure mail''', subject: 'build failure mail', to: "${params.Failure_Email}",
-						from : 'noreply-build@oracle.com'
+						from : 'noreply-build@gmail.com'
 		}
 		
     }		
