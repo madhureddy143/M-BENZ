@@ -1,9 +1,9 @@
 pipeline{
 	agent any
 	parameters {
-		booleanParam (name: 'STATIC_CHECK', defaultValue = true )
-		booleanParam (name: 'QA', defaultValue = true)
-		booleanParam (name: 'Unit_Test', defaultValue = true)
+		booleanParam(name: 'STATIC_CHECK', defaultValue: true )
+		booleanParam (name: 'QA', defaultValue: true)
+		booleanParam (name: 'Unit_Test', defaultValue: true)
 		string (name: 'Success_Email', defaultValue: 'success@gmail.com')
 		string (name: 'Failure_Email', defaultValue: 'failure@gmail.com')
 	}
@@ -34,43 +34,45 @@ pipeline{
 				}
 				}
 		stage ('parallel stage'){
-				stages{
-					stage('static check'){
-						when{
-							expression { "${params.Static_Check}" == true}
-							}
-						steps{
-							fileOperations([folderCreateOperation('static check')])
-							echo "doing static check"
+			parallel{
+				stage('Unit Test'){
+					when{
+						expression { "${params.Unit_Test}" == true}
 						}
-					}
-					stage('QA'){
-						when{
-							expression { "${params.QA}" == true}
-							}
-						steps{
-							fileOperations([folderCreateOperation('QA')])
-							echo"doing QA check"
-								}
-					}
+					steps{
+						fileOperations([folderCreateOperation('Unit Test')])
+						echo "doing unit tests"
+						}
+				
 				}
-				parallel{
-					stage('Unit Test'){
-						when{
-							expression { "${params.Unit_Test}" == 'YES'}
+				stage('sequentail starts'){
+					stages{
+						stage('static check'){
+							when{
+								expression { "${params.Static_Check}" == true}
+								}
+							steps{
+								fileOperations([folderCreateOperation('static check')])
+								echo "doing static check"
 							}
-						steps{
-							fileOperations([folderCreateOperation('Unit Test')])
-							echo "doing unit tests"
-							}
-					
-					}
-		        }
+						}
+						stage('QA'){
+							when{
+								expression { "${params.QA}" == true}
+								}
+							steps{
+								fileOperations([folderCreateOperation('QA')])
+								echo"doing QA check"
+									}
+						}
+				    }
+				}
+		       }
         }				
 		stage('summary'){
 			steps{
 				script{
-				    if ("${Static_Check}" == true){
+				    if ("${STATIC_CHECK}" == true){
 					println("Successfully ran Static_Check block")
 					} else {
 						println("didn't do the Static Checks")
@@ -82,10 +84,10 @@ pipeline{
 						println("didn't do the QA checks")
 						}
 						
-					if ("${QA}" == true){
+					if ("${Unit_Test}" == true){
 					println("Successfully RAN the Unit_Test checks")
 					} else {
-						println("didn't do the QA checks")
+						println("didn't do the unit_test checks")
 						}
 				}		
 			echo "final summary"
