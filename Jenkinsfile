@@ -46,7 +46,7 @@ pipeline{
 					}
 					stage('QA'){
 						when{
-							expression { "${params.QA}" == true &&}
+							expression { "${params.QA}" == true}
 							}
 						steps{
 							fileOperations([folderCreateOperation('QA')])
