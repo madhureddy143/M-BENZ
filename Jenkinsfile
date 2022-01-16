@@ -55,17 +55,18 @@ pipeline{
 					}
 				}
 				parallel{
-				stage('Unit Test'){
-					when{
-						expression { "${params.Unit_Test}" == 'YES'}
-						}
-					steps{
-						fileOperations([folderCreateOperation('Unit Test')])
-						echo "doing unit tests"
-						 }
-				
-				}
-		    }				
+					stage('Unit Test'){
+						when{
+							expression { "${params.Unit_Test}" == 'YES'}
+							}
+						steps{
+							fileOperations([folderCreateOperation('Unit Test')])
+							echo "doing unit tests"
+							}
+					
+					}
+		        }
+        }				
 		stage('summary'){
 			steps{
 				script{
