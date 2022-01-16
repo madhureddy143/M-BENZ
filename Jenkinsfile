@@ -18,14 +18,7 @@ pipeline{
 				}
 		stage('is the run required'){
 			steps{
-				script {
-                def now = new Date()
-				def year = now.format("yyyy", TimeZone.getTimeZone('IST'))	
-				
-				def response = httpRequest contentType: 'APPLICATION_JSON', httpMode: 'GET', outputFile: 'build.json', url: "https://calendarific.com/api/v2/holidays?&api_key=d20d05ccb411d9ce3b56b654971e17a29b0aa1ed&country=IN&year=${year}"
-				echo "working on rest url and got the report and captured in build.json"
-				
-				}
+				echo "is it required"
 				}
 				}
 		stage('Build'){
@@ -35,16 +28,6 @@ pipeline{
 				}
 		stage ('parallel stage'){
 			parallel{
-				stage('Unit Test'){
-					when{
-						expression { "${params.Unit_Test}" == true}
-						}
-					steps{
-						fileOperations([folderCreateOperation('Unit Test')])
-						echo "doing unit tests"
-						}
-				
-				}
 				stage('sequentail starts'){
 					stages{
 						stage('static check'){
@@ -66,6 +49,16 @@ pipeline{
 									}
 						}
 				    }
+				}
+				stage('Unit Test'){
+					when{
+						expression { "${params.Unit_Test}" == true}
+						}
+					steps{
+						fileOperations([folderCreateOperation('Unit Test')])
+						echo "doing unit tests"
+						}
+				
 				}
 		       }
         }				
