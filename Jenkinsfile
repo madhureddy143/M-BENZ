@@ -1,9 +1,9 @@
 pipeline{
 	agent any
 	parameters {
-		choice (name: 'Static_Check', choices: ['YES', 'NO'])
-		choice (name: 'QA', choices: ['YES', 'NO'])
-		choice (name: 'Unit_Test', choices: ['YES', 'NO'])
+		booleanParam (name: 'STATIC_CHECK', defaultValue = true )
+		booleanParam (name: 'QA', defaultValue = true)
+		booleanParam (name: 'Unit_Test', defaultValue = true)
 		string (name: 'Success_Email', defaultValue: 'success@gmail.com')
 		string (name: 'Failure_Email', defaultValue: 'failure@gmail.com')
 	}
@@ -33,8 +33,28 @@ pipeline{
 				echo "a conditon to run based on non-holiday days"
 				}
 				}
-		stage('parrel stages'){
-			parallel{
+		stage ('parallel stage'){
+				stages{
+					stage('static check'){
+						when{
+							expression { "${params.Static_Check}" == true}
+							}
+						steps{
+							fileOperations([folderCreateOperation('static check')])
+							echo "doing static check"
+						}
+					}
+					stage('QA'){
+						when{
+							expression { "${params.QA}" == true &&}
+							}
+						steps{
+							fileOperations([folderCreateOperation('QA')])
+							echo"doing QA check"
+								}
+					}
+				}
+				parallel{
 				stage('Unit Test'){
 					when{
 						expression { "${params.Unit_Test}" == 'YES'}
@@ -43,48 +63,25 @@ pipeline{
 						fileOperations([folderCreateOperation('Unit Test')])
 						echo "doing unit tests"
 						 }
-				}
-				stage('intermediate'){
-					stages{
-						stage('static check'){
-							when{
-								expression { "${params.Static_Check}" == 'YES'}
-								}
-							steps{
-								fileOperations([folderCreateOperation('static check')])
-								echo "doing static check"
-						    }
-				        }
 				
-						stage('QA'){
-							when{
-								expression { "${params.QA}" == 'YES'}
-								}
-							steps{
-								fileOperations([folderCreateOperation('QA')])
-								echo"doing QA check"
-				            }
-				        }
-				    }
 				}
-		    }
-	    }
+		    }				
 		stage('summary'){
 			steps{
 				script{
-				    if ("${Static_Check}" == 'YES'){
+				    if ("${Static_Check}" == true){
 					println("Successfully ran Static_Check block")
 					} else {
 						println("didn't do the Static Checks")
 						}
 				
-					if ("${QA}" == 'YES'){
+					if ("${QA}" == true){
 					println("Successfully RAN the QA checks")
 					} else {
 						println("didn't do the QA checks")
 						}
 						
-					if ("${QA}" == 'YES'){
+					if ("${QA}" == true){
 					println("Successfully RAN the Unit_Test checks")
 					} else {
 						println("didn't do the QA checks")
